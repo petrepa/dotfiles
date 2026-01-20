@@ -34,6 +34,14 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         else
             echo "eza already installed"
         fi
+
+        # Install zellij if not present
+        if ! command -v zellij &> /dev/null; then
+            echo "Installing zellij..."
+            brew install zellij
+        else
+            echo "zellij already installed"
+        fi
     fi
 fi
 
@@ -44,6 +52,15 @@ if [ -f "$HOME/.zshrc" ] && [ ! -L "$HOME/.zshrc" ]; then
 fi
 ln -sf "$DOTFILES_DIR/.zshrc" "$HOME/.zshrc"
 echo "Linked .zshrc"
+
+# Create symlink for zellij config
+mkdir -p "$HOME/.config"
+if [ -d "$HOME/.config/zellij" ] && [ ! -L "$HOME/.config/zellij" ]; then
+    echo "Backing up existing zellij config to .config/zellij.backup"
+    mv "$HOME/.config/zellij" "$HOME/.config/zellij.backup"
+fi
+ln -sf "$DOTFILES_DIR/.config/zellij" "$HOME/.config/zellij"
+echo "Linked zellij config"
 
 echo ""
 echo "Dotfiles installed successfully!"

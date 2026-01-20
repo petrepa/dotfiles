@@ -16,4 +16,5 @@ This will create symlinks from your home directory to the dotfiles in this repo.
 
 ## What's included
 
-- `.zshrc` - Zsh configuration
+- `.zshrc` - Zsh configuration with auto-start zellij
+- `.config/zellij/` - Zellij terminal multiplexer configuration

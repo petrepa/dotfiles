@@ -115,3 +115,8 @@ alias lta='lt -a'
 # Created by `pipx` on 2025-06-21 16:13:40
 export PATH="$PATH:/Users/petrepa/.local/bin"
 export PATH="/Library/TeX/texbin:$PATH"
+
+# Auto-start zellij
+if command -v zellij &> /dev/null && [[ -z "$ZELLIJ" ]]; then
+    zellij attach -c
+fi

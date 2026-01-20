@@ -13,6 +13,7 @@ This is a personal dotfiles repository for managing shell configurations across 
 ```
 
 The install script:
+- On macOS: auto-installs dependencies via Homebrew (thefuck, eza, zellij)
 - Creates symlinks from `$HOME` to dotfiles in this repo
 - Backs up existing files (e.g., `.zshrc` → `.zshrc.backup`) before symlinking
 - After installation, run `source ~/.zshrc` or restart terminal
@@ -20,6 +21,7 @@ The install script:
 ## Structure
 
 - `.zshrc` - Zsh configuration using Oh My Zsh with `robbyrussell` theme and `git` plugin
+- `.config/zellij/` - Zellij terminal multiplexer configuration (symlinked to `~/.config/zellij`)
 - `AutoHotKey/` - Windows AutoHotKey scripts for macOS-like keyboard shortcuts
 
 ## Key Configuration Details
@@ -28,6 +30,7 @@ The install script:
 - Oh My Zsh (expected at `$HOME/.oh-my-zsh`)
 - `thefuck` command correction tool
 - `eza` for enhanced directory listing
+- `zellij` terminal multiplexer (auto-starts when terminal opens)
 
 **Custom aliases defined in .zshrc:**
 - `p` → `cd ~/Project`
