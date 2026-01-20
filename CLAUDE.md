@@ -13,7 +13,7 @@ This is a personal dotfiles repository for managing shell configurations across 
 ```
 
 The install script:
-- On macOS: auto-installs dependencies via Homebrew (thefuck, eza, zellij)
+- On macOS: auto-installs dependencies via Homebrew (thefuck, eza, zellij, zoxide)
 - Creates symlinks from `$HOME` to dotfiles in this repo
 - Backs up existing files (e.g., `.zshrc` → `.zshrc.backup`) before symlinking
 - After installation, run `source ~/.zshrc` or restart terminal
@@ -31,6 +31,7 @@ The install script:
 - `thefuck` command correction tool
 - `eza` for enhanced directory listing
 - `zellij` terminal multiplexer (auto-starts when terminal opens)
+- `zoxide` smarter cd command (use `z` to jump to directories)
 
 **Custom aliases defined in .zshrc:**
 - `p` → `cd ~/Project`

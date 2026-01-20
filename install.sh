@@ -42,6 +42,14 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         else
             echo "zellij already installed"
         fi
+
+        # Install zoxide if not present
+        if ! command -v zoxide &> /dev/null; then
+            echo "Installing zoxide..."
+            brew install zoxide
+        else
+            echo "zoxide already installed"
+        fi
     fi
 fi
 

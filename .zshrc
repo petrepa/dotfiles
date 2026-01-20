@@ -116,6 +116,9 @@ alias lta='lt -a'
 export PATH="$PATH:/Users/petrepa/.local/bin"
 export PATH="/Library/TeX/texbin:$PATH"
 
+# Initialize zoxide (smarter cd)
+eval "$(zoxide init zsh)"
+
 # Auto-start zellij
 if command -v zellij &> /dev/null && [[ -z "$ZELLIJ" ]]; then
     zellij attach -c
