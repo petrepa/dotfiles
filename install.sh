@@ -9,6 +9,34 @@ DOTFILES_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 echo "Installing dotfiles from $DOTFILES_DIR"
 
+# Install dependencies on macOS
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    echo ""
+    echo "Detected macOS, checking dependencies..."
+
+    # Check for Homebrew
+    if ! command -v brew &> /dev/null; then
+        echo "Warning: Homebrew not installed. Install it from https://brew.sh"
+        echo "Skipping dependency installation."
+    else
+        # Install thefuck if not present
+        if ! command -v thefuck &> /dev/null; then
+            echo "Installing thefuck..."
+            brew install thefuck
+        else
+            echo "thefuck already installed"
+        fi
+
+        # Install eza if not present
+        if ! command -v eza &> /dev/null; then
+            echo "Installing eza..."
+            brew install eza
+        else
+            echo "eza already installed"
+        fi
+    fi
+fi
+
 # Create symlink for .zshrc
 if [ -f "$HOME/.zshrc" ] && [ ! -L "$HOME/.zshrc" ]; then
     echo "Backing up existing .zshrc to .zshrc.backup"
