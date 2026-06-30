@@ -35,12 +35,14 @@ After installation: `source ~/.zshrc` or restart the terminal; run
 - `.config/zellij/` — Zellij config (symlinked to `~/.config/zellij`).
 - `.config/alacritty/` — Alacritty config:
   - `alacritty.toml` — base, self-contained, **no shell block** (so macOS/Linux
-    use the login shell). Windowed 110×32, Catppuccin Mocha, CaskaydiaCove Nerd
-    Font. Symlinked to `~/.config/alacritty/alacritty.toml` on macOS/Linux.
+    use the login shell). Default window size/placement (no forced size,
+    centering, or maximize), Catppuccin Mocha, CaskaydiaCove Nerd Font,
+    `Ctrl+Shift+N` for a new window. Symlinked to
+    `~/.config/alacritty/alacritty.toml` on macOS/Linux.
   - `shell.windows.toml` — Windows-only `[terminal.shell]` fragment
     (`wsl.exe → zsh`). Appended to the base by `install.sh` on Windows.
-- `AutoHotKey/` — Windows scripts: macOS-like editing shortcuts, app-window
-  switching, and centering Alacritty on launch.
+- `AutoHotKey/` — Windows scripts: macOS-like editing shortcuts and app-window
+  switching.
 
 ## Key Configuration Details
 

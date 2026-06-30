@@ -39,15 +39,15 @@ After installing: `source ~/.zshrc` (or restart the terminal), and run
     Used directly on macOS/Linux.
   - `shell.windows.toml` — Windows-only fragment (`wsl.exe → zsh`), appended to
     the base when deploying on Windows.
-- `AutoHotKey/` — Windows AutoHotKey scripts (macOS-like keyboard shortcuts and
-  centering Alacritty on launch).
+- `AutoHotKey/` — Windows AutoHotKey scripts (macOS-like keyboard shortcuts).
 
 ## Terminal emulator: Alacritty
 
-The Alacritty window is non-maximized (110×32) with a Nerd Font. On Windows it
-launches WSL2 straight into zsh, and `AutoHotKey/niceToHaves.ahk` centers each
-new Alacritty window (Alacritty has no native centering). On macOS/Linux,
-Alacritty uses your login shell and the window manager handles placement.
+The Alacritty window opens at its default size with a Nerd Font — no forced
+size, centering, or maximize; the OS/window manager handles placement (e.g.
+Raycast's Center command on Windows/macOS if you want to center on demand).
+`Ctrl+Shift+N` opens a new window. On Windows it launches WSL2 straight into
+zsh; on macOS/Linux it uses your login shell.
 
 Requires the **CaskaydiaCove Nerd Font** (from
 [nerd-fonts](https://github.com/ryanoasis/nerd-fonts)) installed on the host
