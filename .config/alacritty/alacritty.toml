@@ -46,6 +46,13 @@ style = { shape = "Block", blinking = "On" }
 blink_interval = 600
 unfocused_hollow = true
 
+[keyboard]
+bindings = [
+    # New Alacritty window (on Windows: a fresh WSL -> zsh -> zellij session).
+    # Alacritty handles this itself, so it works even with zellij running inside.
+    { key = "N", mods = "Control|Shift", action = "CreateNewWindow" },
+]
+
 [selection]
 save_to_clipboard = true
 
