@@ -1,0 +1,79 @@
+# Alacritty configuration — petrepa/dotfiles
+# Canonical source. On Windows this is deployed to %APPDATA%\alacritty\alacritty.toml
+# On macOS/Linux it belongs at ~/.config/alacritty/alacritty.toml
+# Schema targets Alacritty 0.13+ (tested on 0.17).
+
+[general]
+live_config_reload = true
+
+# Launch WSL2 (Ubuntu) straight into zsh. zsh's .zshrc auto-starts zellij.
+# On macOS/Linux, remove this [terminal.shell] block to use the default login shell.
+[terminal.shell]
+program = "wsl.exe"
+args = ["~", "-e", "zsh"]
+
+[env]
+TERM = "xterm-256color"
+
+[window]
+padding = { x = 8, y = 8 }
+dynamic_padding = true
+opacity = 0.97
+decorations = "Full"
+startup_mode = "Maximized"
+title = "Alacritty"
+dynamic_title = true
+
+[scrolling]
+history = 10000
+multiplier = 3
+
+[font]
+size = 11.0
+normal = { family = "CaskaydiaCove Nerd Font Mono", style = "Regular" }
+bold = { family = "CaskaydiaCove Nerd Font Mono", style = "Bold" }
+italic = { family = "CaskaydiaCove Nerd Font Mono", style = "Italic" }
+bold_italic = { family = "CaskaydiaCove Nerd Font Mono", style = "Bold Italic" }
+
+[cursor]
+style = { shape = "Block", blinking = "On" }
+blink_interval = 600
+unfocused_hollow = true
+
+[selection]
+save_to_clipboard = true
+
+# Catppuccin Mocha
+[colors.primary]
+background = "#1e1e2e"
+foreground = "#cdd6f4"
+dim_foreground = "#7f849c"
+bright_foreground = "#cdd6f4"
+
+[colors.cursor]
+text = "#1e1e2e"
+cursor = "#f5e0dc"
+
+[colors.normal]
+black = "#45475a"
+red = "#f38ba8"
+green = "#a6e3a1"
+yellow = "#f9e2af"
+blue = "#89b4fa"
+magenta = "#f5c2e7"
+cyan = "#94e2d5"
+white = "#bac2de"
+
+[colors.bright]
+black = "#585b70"
+red = "#f38ba8"
+green = "#a6e3a1"
+yellow = "#f9e2af"
+blue = "#89b4fa"
+magenta = "#f5c2e7"
+cyan = "#94e2d5"
+white = "#a6adc8"
+
+[colors.selection]
+text = "#1e1e2e"
+background = "#f5e0dc"

@@ -102,7 +102,11 @@ source $ZSH/oh-my-zsh.sh
 
 export NODE_OPTIONS="--no-deprecation"
 
-eval $(thefuck --alias)
+# Ensure user-local binaries are on PATH (zellij, zoxide, eza, thefuck on Linux/WSL)
+export PATH="$HOME/.local/bin:$PATH"
+
+# thefuck — only if installed (avoids a startup error on machines without it)
+command -v thefuck &> /dev/null && eval "$(thefuck --alias)"
 
 export PATH=/Users/petrepa/Library/Python/3.9/lib/python/site-packages:$PATH
 
