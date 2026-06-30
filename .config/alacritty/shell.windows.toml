@@ -1,0 +1,12 @@
+# Windows-only Alacritty fragment — petrepa/dotfiles
+#
+# install.sh appends this to the base alacritty.toml when deploying to
+# %APPDATA%\alacritty on Windows. It makes Alacritty launch WSL2 straight into
+# zsh, whose .zshrc then auto-starts zellij.
+#
+# Do NOT put this on macOS/Linux: `wsl.exe` doesn't exist there, and the base
+# config already uses the native login shell.
+
+[terminal.shell]
+program = "wsl.exe"
+args = ["~", "-e", "zsh"]

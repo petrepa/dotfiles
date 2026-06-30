@@ -1,28 +1,34 @@
-# Alacritty configuration — petrepa/dotfiles
-# Canonical source. On Windows this is deployed to %APPDATA%\alacritty\alacritty.toml
-# On macOS/Linux it belongs at ~/.config/alacritty/alacritty.toml
+# Alacritty configuration — petrepa/dotfiles  (base, cross-platform)
+#
+# This file is self-contained and works as-is on macOS and Linux, where it is
+# symlinked to ~/.config/alacritty/alacritty.toml and Alacritty uses your login
+# shell (zsh).
+#
+# On Windows there is NO shell here on purpose — install.sh deploys this file to
+# %APPDATA%\alacritty\alacritty.toml with shell.windows.toml appended, which adds
+# the `wsl.exe -> zsh` launcher.
+#
 # Schema targets Alacritty 0.13+ (tested on 0.17).
 
 [general]
 live_config_reload = true
 
-# Launch WSL2 (Ubuntu) straight into zsh. zsh's .zshrc auto-starts zellij.
-# On macOS/Linux, remove this [terminal.shell] block to use the default login shell.
-[terminal.shell]
-program = "wsl.exe"
-args = ["~", "-e", "zsh"]
-
 [env]
 TERM = "xterm-256color"
 
 [window]
+# Reasonable, non-maximized window. `dimensions` is in cells (cols x lines).
+dimensions = { columns = 110, lines = 32 }
 padding = { x = 8, y = 8 }
 dynamic_padding = true
 opacity = 0.97
 decorations = "Full"
-startup_mode = "Maximized"
+startup_mode = "Windowed"
 title = "Alacritty"
 dynamic_title = true
+# Alacritty has no built-in "center" option. On Windows, AutoHotKey/niceToHaves.ahk
+# centers the window on launch. On macOS/Linux, leave placement to the window
+# manager (or use a WM rule).
 
 [scrolling]
 history = 10000

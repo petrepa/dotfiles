@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-This is a personal dotfiles repository for managing shell configurations across macOS and Windows. The repository uses symlinks to connect configuration files from this repo to the home directory.
+Personal dotfiles for a consistent terminal setup across **macOS, Ubuntu/Linux,
+and Windows (via WSL2)**: Alacritty + zsh (Oh My Zsh) + zellij, plus `zoxide`,
+`eza`, and `thefuck`. Configs are symlinked from this repo into `$HOME`.
 
 ## Installation
 
@@ -12,29 +14,54 @@ This is a personal dotfiles repository for managing shell configurations across 
 ./install.sh
 ```
 
-The install script:
-- On macOS: auto-installs dependencies via Homebrew (thefuck, eza, zellij, zoxide)
-- Creates symlinks from `$HOME` to dotfiles in this repo
-- Backs up existing files (e.g., `.zshrc` → `.zshrc.backup`) before symlinking
-- After installation, run `source ~/.zshrc` or restart terminal
+`install.sh` detects the platform (`$OSTYPE`, plus `/proc/version` for WSL) and:
+- **macOS**: installs deps via Homebrew (thefuck, eza, zellij, zoxide).
+- **Linux**: installs `zsh` via apt; installs `zellij`/`zoxide`/`eza` as
+  prebuilt binaries into `~/.local/bin`; `thefuck` is optional.
+- Installs Oh My Zsh if missing.
+- Symlinks `.zshrc`, `.config/zellij`, and `.config/alacritty/alacritty.toml`
+  (backing up existing non-symlink files to `*.backup`).
+- **WSL only**: also deploys Alacritty to the Windows host by concatenating
+  `alacritty.toml` + `shell.windows.toml` into `%APPDATA%\alacritty\alacritty.toml`.
+
+After installation: `source ~/.zshrc` or restart the terminal; run
+`chsh -s "$(which zsh)"` if zsh isn't the login shell.
 
 ## Structure
 
-- `.zshrc` - Zsh configuration using Oh My Zsh with `robbyrussell` theme and `git` plugin
-- `.config/zellij/` - Zellij terminal multiplexer configuration (symlinked to `~/.config/zellij`)
-- `AutoHotKey/` - Windows AutoHotKey scripts for macOS-like keyboard shortcuts
+- `.zshrc` — Oh My Zsh (`robbyrussell` theme, `git` plugin). Adds
+  `~/.local/bin` to PATH; macOS-only paths and `thefuck`/`zoxide` init are
+  guarded so it's portable across all three platforms.
+- `.config/zellij/` — Zellij config (symlinked to `~/.config/zellij`).
+- `.config/alacritty/` — Alacritty config:
+  - `alacritty.toml` — base, self-contained, **no shell block** (so macOS/Linux
+    use the login shell). Windowed 110×32, Catppuccin Mocha, CaskaydiaCove Nerd
+    Font. Symlinked to `~/.config/alacritty/alacritty.toml` on macOS/Linux.
+  - `shell.windows.toml` — Windows-only `[terminal.shell]` fragment
+    (`wsl.exe → zsh`). Appended to the base by `install.sh` on Windows.
+- `AutoHotKey/` — Windows scripts: macOS-like editing shortcuts, app-window
+  switching, and centering Alacritty on launch.
 
 ## Key Configuration Details
 
-**Shell dependencies:**
-- Oh My Zsh (expected at `$HOME/.oh-my-zsh`)
-- `thefuck` command correction tool
-- `eza` for enhanced directory listing
-- `zellij` terminal multiplexer (auto-starts when terminal opens)
-- `zoxide` smarter cd command (use `z` to jump to directories)
+**Cross-platform model:** one repo, three targets. The shell/multiplexer stack
+runs natively on macOS/Linux and inside WSL2 on Windows. Alacritty is a host
+GUI app: symlinked on macOS/Linux, deployed (copied, base + WSL shell) to
+`%APPDATA%` on Windows.
+
+**Shell dependencies:** Oh My Zsh (`$HOME/.oh-my-zsh`), `zellij` (auto-starts
+via `.zshrc`), `zoxide` (`z` to jump), `eza` (listings), `thefuck` (optional).
 
 **Custom aliases defined in .zshrc:**
 - `p` → `cd ~/Project`
 - `lsa` → `ls -a`
 - `lt` → tree view with eza
 - `lta` → tree view including hidden files
+
+## Conventions
+
+- Keep `alacritty.toml` free of OS-specific shell config; Windows specifics go
+  in `shell.windows.toml` and are appended at install time.
+- Guard platform-specific lines in `.zshrc` (existence checks or `$OSTYPE`) so
+  the file stays clean on every platform.
+- Keep `install.sh` idempotent.

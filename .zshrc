@@ -108,7 +108,12 @@ export PATH="$HOME/.local/bin:$PATH"
 # thefuck — only if installed (avoids a startup error on machines without it)
 command -v thefuck &> /dev/null && eval "$(thefuck --alias)"
 
-export PATH=/Users/petrepa/Library/Python/3.9/lib/python/site-packages:$PATH
+# macOS-only paths (Python user site-packages + MacTeX), added only when present
+if [[ "$OSTYPE" == darwin* ]]; then
+    [[ -d "$HOME/Library/Python/3.9/lib/python/site-packages" ]] && \
+        export PATH="$HOME/Library/Python/3.9/lib/python/site-packages:$PATH"
+    [[ -d "/Library/TeX/texbin" ]] && export PATH="/Library/TeX/texbin:$PATH"
+fi
 
 alias p="cd ~/Project"
 # alias ls='eza -lh --group-directories-first --icons --hyperlink'
@@ -116,12 +121,8 @@ alias lsa='ls -a'
 alias lt='eza --tree --level=2 --long --icons --git'
 alias lta='lt -a'
 
-# Created by `pipx` on 2025-06-21 16:13:40
-export PATH="$PATH:/Users/petrepa/.local/bin"
-export PATH="/Library/TeX/texbin:$PATH"
-
-# Initialize zoxide (smarter cd)
-eval "$(zoxide init zsh)"
+# Initialize zoxide (smarter cd) — only if installed
+command -v zoxide &> /dev/null && eval "$(zoxide init zsh)"
 
 # Auto-start zellij
 if command -v zellij &> /dev/null && [[ -z "$ZELLIJ" ]]; then

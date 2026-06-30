@@ -29,3 +29,23 @@ Switch between the windows of the open app
       break
   }
 }
+
+
+
+/*-----------------------------------------------------------
+Center each Alacritty window on the primary screen when it opens.
+Alacritty has no native "center" option, so we do it here.
+-----------------------------------------------------------*/
+CenterAlacritty() {
+  static seen := Map()
+  for hwnd in WinGetList("ahk_exe alacritty.exe") {
+    if seen.Has(hwnd)
+      continue
+    seen[hwnd] := true
+    WinGetPos(, , &w, &h, hwnd)
+    x := (A_ScreenWidth - w) // 2
+    y := (A_ScreenHeight - h) // 2
+    WinMove(x, y, , , hwnd)
+  }
+}
+SetTimer(CenterAlacritty, 250)
