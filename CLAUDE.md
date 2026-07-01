@@ -5,8 +5,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Repository Overview
 
 Personal dotfiles for a consistent terminal setup across **macOS, Ubuntu/Linux,
-and Windows (via WSL2)**: Alacritty + zsh (Oh My Zsh) + zellij, plus `zoxide`,
-`eza`, and `thefuck`. Configs are symlinked from this repo into `$HOME`.
+and Windows (via WSL2)**: Alacritty + zsh (Oh My Zsh) + zellij + Neovim
+(LazyVim), plus `zoxide`, `eza`, and `thefuck`. Configs are symlinked from this
+repo into `$HOME`.
 
 ## Installation
 
@@ -15,12 +16,16 @@ and Windows (via WSL2)**: Alacritty + zsh (Oh My Zsh) + zellij, plus `zoxide`,
 ```
 
 `install.sh` detects the platform (`$OSTYPE`, plus `/proc/version` for WSL) and:
-- **macOS**: installs deps via Homebrew (thefuck, eza, zellij, zoxide).
-- **Linux**: installs `zsh` via apt; installs `zellij`/`zoxide`/`eza` as
-  prebuilt binaries into `~/.local/bin`; `thefuck` is optional.
+- **macOS**: installs deps via Homebrew (thefuck, eza, zellij, zoxide, neovim,
+  ripgrep, fd, fzf, lazygit).
+- **Linux**: installs apt packages that need root (`zsh`, `build-essential`,
+  `unzip`, `ripgrep`); installs `zellij`/`zoxide`/`eza`/`fd`/`fzf`/`lazygit` as
+  prebuilt binaries into `~/.local/bin`, and Neovim into `~/.local/opt/nvim`
+  (symlinked to `~/.local/bin/nvim`); `thefuck` is optional.
 - Installs Oh My Zsh if missing.
-- Symlinks `.zshrc`, `.config/zellij`, and `.config/alacritty/alacritty.toml`
-  (backing up existing non-symlink files to `*.backup`).
+- Symlinks `.zshrc`, `.config/zellij`, `.config/nvim`, and
+  `.config/alacritty/alacritty.toml` (backing up existing non-symlink files to
+  `*.backup`).
 - **WSL only**: also deploys Alacritty to the Windows host by concatenating
   `alacritty.toml` + `shell.windows.toml` into `%APPDATA%\alacritty\alacritty.toml`.
 
@@ -33,6 +38,12 @@ After installation: `source ~/.zshrc` or restart the terminal; run
   `~/.local/bin` to PATH; macOS-only paths and `thefuck`/`zoxide` init are
   guarded so it's portable across all three platforms.
 - `.config/zellij/` — Zellij config (symlinked to `~/.config/zellij`).
+- `.config/nvim/` — Neovim / [LazyVim](https://www.lazyvim.org/) config (whole
+  dir symlinked to `~/.config/nvim`). `init.lua` bootstraps lazy.nvim; personal
+  config in `lua/config/`, plugin specs/overrides in `lua/plugins/`.
+  `lazy-lock.json` pins plugin versions — commit it after `:Lazy sync`. The
+  starter's own `.git`/`README`/`LICENSE` were stripped; its `.gitignore` is
+  kept (it only ignores scratch/test artifacts, not `lazy-lock.json`).
 - `.config/alacritty/` — Alacritty config:
   - `alacritty.toml` — base, self-contained, **no shell block** (so macOS/Linux
     use the login shell). Default window size/placement (no forced size,
@@ -67,3 +78,5 @@ via `.zshrc`), `zoxide` (`z` to jump), `eza` (listings), `thefuck` (optional).
 - Guard platform-specific lines in `.zshrc` (existence checks or `$OSTYPE`) so
   the file stays clean on every platform.
 - Keep `install.sh` idempotent.
+- For Neovim, don't hand-edit `lazy-lock.json`; change plugins via
+  `lua/plugins/` then `:Lazy sync` and commit the regenerated lockfile.
