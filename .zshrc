@@ -105,6 +105,20 @@ export NODE_OPTIONS="--no-deprecation"
 # Ensure user-local binaries are on PATH (zellij, zoxide, eza, thefuck on Linux/WSL)
 export PATH="$HOME/.local/bin:$PATH"
 
+# ssh-agent — start one agent, reuse it across shells (persist env to a file),
+# and auto-load the key. Enables agent forwarding to the AWS sandbox so git
+# push/pull to GitHub works from the VM without copying private keys onto it.
+if command -v ssh-agent &> /dev/null; then
+    SSH_ENV="$HOME/.ssh/agent.env"
+    [ -f "$SSH_ENV" ] && source "$SSH_ENV" > /dev/null
+    ssh-add -l &> /dev/null
+    if [ $? -eq 2 ]; then                       # 2 = no reachable agent → start one
+        (umask 077; ssh-agent -s > "$SSH_ENV")
+        source "$SSH_ENV" > /dev/null
+    fi
+    ssh-add -l &> /dev/null || ssh-add ~/.ssh/id_ed25519 2> /dev/null  # load key if none
+fi
+
 # thefuck — only if installed (avoids a startup error on machines without it)
 command -v thefuck &> /dev/null && eval "$(thefuck --alias)"
 
