@@ -46,6 +46,10 @@ bindings = [
     # New Alacritty window (on Windows: a fresh WSL -> zsh -> zellij session).
     # Alacritty handles this itself, so it works even with zellij running inside.
     { key = "N", mods = "Control|Shift", action = "CreateNewWindow" },
+    { key = "F11", action = "ToggleFullscreen" },
+    # Shift+Return sends Esc+CR instead of a plain newline, for apps/prompts
+    # that treat Shift+Enter as "insert newline without submitting".
+    { key = "Return", mods = "Shift", chars = "\u001b\r" },
 ]
 
 [selection]
