@@ -1,3 +1,10 @@
+# Fall back to a sane TERM if the parent didn't provide one. A zellij server
+# daemonizes under the init process and keeps the environment it was born with,
+# so a server started before a terminal's config was fixed hands every pane an
+# empty TERM — which makes TUIs (Claude Code, nvim, eza) drop all color.
+# Must run before oh-my-zsh: the theme and zsh's terminfo keybindings need TERM.
+[[ -z "$TERM" || "$TERM" == "dumb" ]] && export TERM="xterm-256color"
+
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
