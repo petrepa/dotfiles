@@ -8,8 +8,9 @@
 # %APPDATA%\alacritty\alacritty.toml with shell.windows.toml appended, which adds
 # the `wsl.exe -> zsh` launcher.
 #
-# Schema targets Alacritty 0.13+ (tested on 0.17).
+# Schema targets Alacritty 0.14+ (tested on 0.17).
 
+[general]
 live_config_reload = true
 
 [env]
