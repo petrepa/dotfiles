@@ -145,7 +145,15 @@ alias lta='lt -a'
 # Initialize zoxide (smarter cd) — only if installed
 command -v zoxide &> /dev/null && eval "$(zoxide init zsh)"
 
-# Auto-start zellij
+# Auto-start zellij.
+#
+# Always attach to one fixed session name. A bare `zellij attach -c` picks the
+# session implicitly, which fails hard ("Please specify the session to attach
+# to") the moment two sessions are live — zsh then falls through to a plain
+# prompt with no zellij. A name is never ambiguous.
+#
+# `exec` replaces zsh instead of nesting under it, so quitting zellij closes the
+# terminal rather than dropping you at a stray shell.
 if command -v zellij &> /dev/null && [[ -z "$ZELLIJ" ]]; then
-    zellij attach -c
+    exec zellij attach -c main
 fi
