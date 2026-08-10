@@ -1,0 +1,10 @@
+# Global markdownlint rules, loaded explicitly by nvim-lint (see
+# lua/plugins/markdown.lua). Rule reference:
+# https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md
+config:
+  # MD013/line-length — off. Prose is soft-wrapped, not hard-wrapped at 80.
+  # To enforce a wider limit instead, replace `false` with:
+  #   line_length: 120
+  #   code_blocks: false
+  #   tables: false
+  MD013: false
