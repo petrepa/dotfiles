@@ -47,6 +47,10 @@ After installing: `source ~/.zshrc` (or restart the terminal), and run
   - `shell.windows.toml` — Windows-only fragment (`wsl.exe → zsh`), appended to
     the base when deploying on Windows.
 - `AutoHotKey/` — Windows AutoHotKey scripts (macOS-like keyboard shortcuts).
+- `gnome/` — GNOME shortcut tweaks (Linux only, skipped on WSL). Currently
+  disables the Alt+1..9 "switch to application" dash shortcuts, since app
+  launching is handled by ulauncher instead — this frees Alt+<digit> for
+  apps that want it themselves (e.g. KiCad's Alt+1/2/3 view shortcuts).
 
 ## Terminal emulator: Alacritty
 

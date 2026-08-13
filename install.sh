@@ -223,6 +223,11 @@ link "$DOTFILES_DIR/.config/nvim" "$HOME/.config/nvim"
 mkdir -p "$HOME/.config/alacritty"
 link "$DOTFILES_DIR/.config/alacritty/alacritty.toml" "$HOME/.config/alacritty/alacritty.toml"
 
+# GNOME: free up Alt+1..9 for apps (KiCad, etc.) instead of dash app-switching
+if [ "$OS" = "linux" ] && [ "$IS_WSL" = 0 ] && [ -n "${XDG_CURRENT_DESKTOP:-}" ]; then
+    "$DOTFILES_DIR/gnome/disable-app-switch-shortcuts.sh"
+fi
+
 # ---------- Windows (WSL) Alacritty deploy ----------
 if [ "$IS_WSL" = 1 ]; then
     appdata_win="$(cmd.exe /c "echo %APPDATA%" 2>/dev/null | tr -d '\r')"

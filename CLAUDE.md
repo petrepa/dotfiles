@@ -47,13 +47,17 @@ After installation: `source ~/.zshrc` or restart the terminal; run
 - `.config/alacritty/` — Alacritty config:
   - `alacritty.toml` — base, self-contained, **no shell block** (so macOS/Linux
     use the login shell). Default window size/placement (no forced size,
-    centering, or maximize), Catppuccin Mocha, CaskaydiaCove Nerd Font,
+    centering, or maximize), Catppuccin Mocha, CaskaydiaMono Nerd Font Mono,
     `Ctrl+Shift+N` for a new window. Symlinked to
     `~/.config/alacritty/alacritty.toml` on macOS/Linux.
   - `shell.windows.toml` — Windows-only `[terminal.shell]` fragment
     (`wsl.exe → zsh`). Appended to the base by `install.sh` on Windows.
 - `AutoHotKey/` — Windows scripts: macOS-like editing shortcuts and app-window
   switching.
+- `gnome/` — `disable-app-switch-shortcuts.sh` clears GNOME's
+  `switch-to-application-1..9` keybindings (Alt+1..9 dash app launching), run
+  by `install.sh` on native Linux (skipped under WSL). Frees Alt+<digit> for
+  app-level shortcuts since ulauncher (Super+space) is the app launcher.
 
 ## Key Configuration Details
 
@@ -67,9 +71,13 @@ via `.zshrc`), `zoxide` (`z` to jump), `eza` (listings), `thefuck` (optional).
 
 **Custom aliases defined in .zshrc:**
 - `p` → `cd ~/Project`
+- `ls` → `eza` listing (icons, hyperlinks, dirs first)
 - `lsa` → `ls -a`
 - `lt` → tree view with eza
 - `lta` → tree view including hidden files
+- `personal-claude` / `work-claude` → launch `claude` with `CLAUDE_CONFIG_DIR`
+  pointed at `~/.claude-personal` / `~/.claude-work` so each account's
+  credentials/config stay isolated
 
 ## Conventions
 
