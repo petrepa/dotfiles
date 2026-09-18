@@ -137,13 +137,20 @@ if [[ "$OSTYPE" == darwin* ]]; then
 fi
 
 alias p="cd ~/Project"
-# alias ls='eza -lh --group-directories-first --icons --hyperlink'
+alias ls='eza -lh --group-directories-first --icons --hyperlink'
 alias lsa='ls -a'
 alias lt='eza --tree --level=2 --long --icons --git'
 alias lta='lt -a'
 
+# Claude Code: separate personal/work accounts (isolated credentials via CLAUDE_CONFIG_DIR)
+alias personal-claude='CLAUDE_CONFIG_DIR=~/.claude-personal claude'
+alias work-claude='CLAUDE_CONFIG_DIR=~/.claude-work claude'
+
 # Initialize zoxide (smarter cd) — only if installed
 command -v zoxide &> /dev/null && eval "$(zoxide init zsh)"
+
+# fzf key bindings/completion — only if the install script generated it
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # Auto-start zellij — only on SSH logins (e.g. the AWS sandbox). Locally,
 # Alacritty stays a plain terminal: agents run on the remote box, so the
