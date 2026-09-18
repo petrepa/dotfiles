@@ -223,6 +223,11 @@ link "$DOTFILES_DIR/.config/nvim" "$HOME/.config/nvim"
 mkdir -p "$HOME/.config/alacritty"
 link "$DOTFILES_DIR/.config/alacritty/alacritty.toml" "$HOME/.config/alacritty/alacritty.toml"
 
+# ~/.ssh/rc — keeps a stable link to the forwarded ssh-agent socket on hosts
+# that are SSH'd into (the sandbox); inert on hosts that aren't.
+mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+link "$DOTFILES_DIR/ssh/rc" "$HOME/.ssh/rc"
+
 # GNOME: free up Alt+1..9 for apps (KiCad, etc.) instead of dash app-switching
 if [ "$OS" = "linux" ] && [ "$IS_WSL" = 0 ] && [ -n "${XDG_CURRENT_DESKTOP:-}" ]; then
     "$DOTFILES_DIR/gnome/disable-app-switch-shortcuts.sh"

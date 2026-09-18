@@ -112,10 +112,20 @@ export NODE_OPTIONS="--no-deprecation"
 # Ensure user-local binaries are on PATH (zellij, zoxide, eza, thefuck on Linux/WSL)
 export PATH="$HOME/.local/bin:$PATH"
 
-# ssh-agent — start one agent, reuse it across shells (persist env to a file),
-# and auto-load the key. Enables agent forwarding to the AWS sandbox so git
-# push/pull to GitHub works from the VM without copying private keys onto it.
-if command -v ssh-agent &> /dev/null; then
+# ssh-agent.
+#
+# Over SSH (the sandbox): never start an agent here — the laptop's agent is
+# forwarded (ForwardAgent yes), so no private key needs to live on the box.
+# sshd hands each connection a fresh SSH_AUTH_SOCK path, which a long-lived
+# multiplexer pane keeps long after that connection is gone. ~/.ssh/rc (see
+# ssh/rc in this repo) maintains a stable link to the newest live socket, so
+# every shell points at the link instead and survives reconnects.
+#
+# Locally: start one agent, reuse it across shells (env persisted to a file),
+# and auto-load the key.
+if [[ -n "$SSH_CONNECTION" ]]; then
+    [[ -L "$HOME/.ssh/ssh_auth_sock" ]] && export SSH_AUTH_SOCK="$HOME/.ssh/ssh_auth_sock"
+elif command -v ssh-agent &> /dev/null; then
     SSH_ENV="$HOME/.ssh/agent.env"
     [ -f "$SSH_ENV" ] && source "$SSH_ENV" > /dev/null
     ssh-add -l &> /dev/null

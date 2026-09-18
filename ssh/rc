@@ -1,0 +1,18 @@
+# ~/.ssh/rc — sshd runs this (with /bin/sh) at the start of every SSH session,
+# before the shell or command. Symlinked here by install.sh.
+#
+# Keeps ~/.ssh/ssh_auth_sock pointing at a live forwarded ssh-agent socket.
+# sshd creates a fresh socket path per connection and removes it when that
+# connection ends, so a shell in a long-lived multiplexer pane is left with a
+# dead SSH_AUTH_SOCK after a reconnect. .zshrc points every SSH shell at this
+# link instead, so refreshing the link revives all of them at once.
+#
+# Only relink when the current link is dead: a short-lived connection (scp,
+# `ssh host cmd`, herdr's ssh bridge) must not hijack a link that still works.
+#
+# Must stay silent — sshd feeds anything printed here into the session, which
+# corrupts scp/sftp. With an rc file present sshd also stops running xauth for
+# X11 forwarding (unused here).
+if [ -n "$SSH_AUTH_SOCK" ] && [ -S "$SSH_AUTH_SOCK" ] && [ ! -S "$HOME/.ssh/ssh_auth_sock" ]; then
+    ln -sfn "$SSH_AUTH_SOCK" "$HOME/.ssh/ssh_auth_sock" 2>/dev/null
+fi
