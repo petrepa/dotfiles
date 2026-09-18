@@ -2,9 +2,10 @@
 
 Personal dotfiles for **macOS, Ubuntu/Linux, and Windows (via WSL2)** — a
 consistent terminal setup everywhere: Alacritty + zsh (Oh My Zsh) + Neovim
-(LazyVim), with `zoxide`, `eza`, and `thefuck`, plus a multiplexer (herdr, or
-zellij) that runs on the one machine where the agents run — see
-[Where things run](#where-things-run).
+(LazyVim), with `zoxide`, `eza`, and `thefuck`, plus [herdr](https://herdr.dev)
+as the one multiplexer, on the one machine where the agents run — see
+[Where things run](#where-things-run). New machine? Paste
+[docs/station-setup-prompt.md](docs/station-setup-prompt.md) into Claude Code.
 
 ## Installation
 
@@ -18,12 +19,12 @@ cd ~/dotfiles
 
 `install.sh` is idempotent and adapts to the platform:
 
-- **macOS** — installs `thefuck`, `eza`, `zellij`, `zoxide`, `neovim`,
-  `ripgrep`, `fd`, `fzf`, `lazygit` via Homebrew.
+- **macOS** — installs `thefuck`, `eza`, `zoxide`, `neovim`, `ripgrep`, `fd`,
+  `fzf`, `lazygit` via Homebrew.
 - **Ubuntu/Linux** — installs `zsh` + the Neovim toolchain
   (`build-essential`, `unzip`, `ripgrep`) via apt, and drops
-  `zellij`/`zoxide`/`eza`/`neovim`/`fd`/`fzf`/`lazygit` binaries into
-  `~/.local/bin` (they aren't reliably in apt). `thefuck` is optional
+  `zoxide`/`eza`/`neovim`/`fd`/`fzf`/`lazygit` binaries into `~/.local/bin`
+  (they aren't reliably in apt). `thefuck` is optional
   (`pipx install thefuck`).
 - **both** — installs [herdr](https://herdr.dev) with its own installer (one
   binary in `~/.local/bin`).
@@ -40,13 +41,9 @@ After installing: `source ~/.zshrc` (or restart the terminal), and run
 
 - `.zshrc` — Zsh / Oh My Zsh config. Cross-platform: the macOS-only paths
   are guarded, so it's clean on Linux/WSL too. On SSH logins it lands in the
-  host's persistent multiplexer session (herdr if installed, else zellij);
-  locally it starts nothing.
+  host's persistent herdr session; locally it starts nothing.
 - `.config/herdr/config.toml` — herdr (agent-aware multiplexer) config. Only
   this file is tracked; herdr keeps logs/sockets/session state next to it.
-- `.config/zellij/` — Zellij configuration: a minimal `config.kdl` (tokyo-night
-  theme, direct Alt+u/d scrolling) plus `themes/`, including the orange
-  `sandbox` theme that `.zshrc` selects on remote hosts only.
 - `ssh/rc` — linked to `~/.ssh/rc`; keeps a stable link to the forwarded
   ssh-agent socket on hosts you SSH into (see below). Inert elsewhere.
 - `.config/nvim/` — Neovim configuration based on
@@ -73,25 +70,21 @@ is just a client of it.
 
 **Locally:** Alacritty is a plain terminal, nothing auto-starts. One window per
 task (`Ctrl+Shift+N`), the window manager tiles them (GNOME's Tiling Assistant,
-Hyprland, Windows). When panes are wanted locally: `zj [name]` attaches to a
-local zellij session by hand.
+Hyprland, Windows). Local panes, if ever wanted, are a local `herdr` — but the
+point is not to need them.
 
-**Remote (sandbox):** a persistent server keeps the panes and agents running
-between connections. `.zshrc` `exec`s into it on SSH logins:
+**Remote (sandbox):** a persistent herdr server keeps the panes and agents
+running between connections and shows which agent in each pane is working,
+idle or blocked. `.zshrc` `exec`s into it on SSH logins. From a laptop,
+`herdr --remote aviant-sandbox` draws the same session with the local UI/keys;
+it uses OpenSSH, so `~/.ssh/config` aliases and `ForwardAgent` apply. From a
+phone/tablet SSH client, `ssh aviant-sandbox` lands in it too. Prefix `Ctrl+b`
+(`Ctrl+b q` detaches, `Ctrl+b ?` help).
 
-- **herdr** (default when installed) — shows which agent in each pane is
-  working, idle or blocked. From a laptop, `herdr --remote aviant-sandbox`
-  draws the remote session with the local UI/keys; it uses OpenSSH, so
-  `~/.ssh/config` aliases and `ForwardAgent` apply. From a phone/tablet SSH
-  client, `ssh aviant-sandbox` lands in the same session. Prefix `Ctrl+b`
-  (`prefix+q` detaches).
-- **zellij** (fallback when herdr is absent) — `zellij attach -c main` with
-  the orange `sandbox` theme, so it can never be mistaken for a local session.
-
-Because `.zshrc` `exec`s the multiplexer, a crash on login closes the SSH
-session. Escape hatches: `ssh -t aviant-sandbox bash` (skips `.zshrc`) or
+Because `.zshrc` `exec`s herdr, a crash on login closes the SSH session.
+Escape hatches: `ssh -t aviant-sandbox bash` (skips `.zshrc`) or
 `ssh -t aviant-sandbox 'NO_MUX=1 zsh'` (this config, no multiplexer). Shells
-inside a pane never re-trigger it (`$HERDR_ENV` / `$ZELLIJ` / `$TMUX`).
+inside a pane never re-trigger it (`$HERDR_ENV` / `$TMUX`).
 
 **Git on the sandbox** uses the laptop's ssh-agent via `ForwardAgent yes` — no
 private keys on the VM. Two things make that survive a long-lived session:

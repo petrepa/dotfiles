@@ -2,8 +2,8 @@
 #
 # Dotfiles install script — macOS, Ubuntu/Linux, and Windows (via WSL2).
 #
-# - macOS:   installs deps via Homebrew (thefuck, eza, zellij, zoxide, ...)
-# - Linux:   installs zsh via apt, and zellij/zoxide/eza/... as user binaries
+# - macOS:   installs deps via Homebrew (thefuck, eza, zoxide, neovim, ...)
+# - Linux:   installs zsh via apt, and zoxide/eza/neovim/... as user binaries
 #            in ~/.local/bin (they aren't reliably packaged in apt)
 # - both:    herdr via its own installer (single binary in ~/.local/bin)
 # - Windows: run this inside WSL2 (Ubuntu). In addition to the Linux setup it
@@ -44,7 +44,7 @@ install_macos_deps() {
         return
     fi
     # neovim + tools LazyVim wants (ripgrep, fd, fzf, lazygit) plus the base stack
-    for pkg in thefuck eza zellij zoxide neovim ripgrep fd fzf lazygit; do
+    for pkg in thefuck eza zoxide neovim ripgrep fd fzf lazygit; do
         if have "$pkg" || { [ "$pkg" = "fd" ] && have fdfind; }; then
             echo "$pkg already installed"
         else
@@ -78,16 +78,6 @@ install_linux_deps() {
         fi
     else
         echo "apt packages already present (zsh, compiler, unzip, ripgrep)"
-    fi
-
-    # zellij — prebuilt musl binary -> ~/.local/bin
-    if ! have zellij; then
-        echo "Installing zellij -> $LOCAL_BIN ..."
-        curl -fsSL -o "$tmp/zellij.tgz" \
-            "https://github.com/zellij-org/zellij/releases/latest/download/zellij-${arch}-unknown-linux-musl.tar.gz" \
-            && tar xzf "$tmp/zellij.tgz" -C "$LOCAL_BIN"
-    else
-        echo "zellij already installed"
     fi
 
     # eza — prebuilt binary -> ~/.local/bin
@@ -231,9 +221,14 @@ link() {
 # .zshrc
 link "$DOTFILES_DIR/.zshrc" "$HOME/.zshrc"
 
-# zellij
+# Retired configs: drop links left behind by earlier versions of this repo
+# (they dangle once the target directory is gone). Regular files are left alone.
 mkdir -p "$HOME/.config"
-link "$DOTFILES_DIR/.config/zellij" "$HOME/.config/zellij"
+for old in "$HOME/.config/zellij"; do
+    if [ -L "$old" ] && [ ! -e "$old" ]; then
+        rm "$old" && echo "Removed dangling link $old"
+    fi
+done
 
 # Neovim (LazyVim) — whole config dir
 link "$DOTFILES_DIR/.config/nvim" "$HOME/.config/nvim"

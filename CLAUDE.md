@@ -6,9 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Personal dotfiles for a consistent terminal setup across **macOS, Ubuntu/Linux,
 and Windows (via WSL2)**: Alacritty + zsh (Oh My Zsh) + Neovim (LazyVim), plus
-`zoxide`, `eza`, `thefuck`, and a multiplexer (herdr, fallback zellij) that
-runs only on the remote sandbox where the agents run. Configs are symlinked
-from this repo into `$HOME`.
+`zoxide`, `eza`, `thefuck`, and herdr as the only multiplexer, running on the
+remote sandbox where the agents run. Configs are symlinked from this repo into
+`$HOME`. `docs/station-setup-prompt.md` is the prompt for bringing a new
+machine onto this setup.
 
 ## Installation
 
@@ -17,19 +18,19 @@ from this repo into `$HOME`.
 ```
 
 `install.sh` detects the platform (`$OSTYPE`, plus `/proc/version` for WSL) and:
-- **macOS**: installs deps via Homebrew (thefuck, eza, zellij, zoxide, neovim,
+- **macOS**: installs deps via Homebrew (thefuck, eza, zoxide, neovim,
   ripgrep, fd, fzf, lazygit).
 - **Linux**: installs apt packages that need root (`zsh`, `build-essential`,
-  `unzip`, `ripgrep`); installs `zellij`/`zoxide`/`eza`/`fd`/`fzf`/`lazygit` as
+  `unzip`, `ripgrep`); installs `zoxide`/`eza`/`fd`/`fzf`/`lazygit` as
   prebuilt binaries into `~/.local/bin`, and Neovim into `~/.local/opt/nvim`
   (symlinked to `~/.local/bin/nvim`); `thefuck` is optional.
 - **both**: installs `herdr` via `curl -fsSL https://herdr.dev/install.sh | sh`
   (one binary in `~/.local/bin`), skipped when already on PATH.
 - Installs Oh My Zsh if missing.
-- Symlinks `.zshrc`, `.config/zellij`, `.config/nvim`,
-  `.config/alacritty/alacritty.toml`, `.config/herdr/config.toml`, and
-  `ssh/rc` → `~/.ssh/rc` (backing up existing non-symlink files to
-  `*.backup`).
+- Symlinks `.zshrc`, `.config/nvim`, `.config/alacritty/alacritty.toml`,
+  `.config/herdr/config.toml`, and `ssh/rc` → `~/.ssh/rc` (backing up
+  existing non-symlink files to `*.backup`); removes dangling links of
+  retired configs (`~/.config/zellij`).
 - **WSL only**: also deploys Alacritty to the Windows host by concatenating
   `alacritty.toml` + `shell.windows.toml` into `%APPDATA%\alacritty\alacritty.toml`.
 
@@ -45,10 +46,9 @@ After installation: `source ~/.zshrc` or restart the terminal; run
   the multiplexer auto-start.
 - `.config/herdr/config.toml` — herdr config, the only tracked file in
   `~/.config/herdr` (herdr writes logs, sockets and `session.json` there).
-- `.config/zellij/` — Zellij config (dir symlinked to `~/.config/zellij`).
-  `config.kdl` holds only deviations from the defaults; `themes/` is
-  auto-loaded and holds `tokyo-night` (default) and `sandbox` (orange, chosen
-  per host from `.zshrc`, never in `config.kdl`).
+- `docs/station-setup-prompt.md` — self-contained prompt to paste into Claude
+  Code on a new machine (Ubuntu/GNOME, Windows/WSL2, Omarchy/Arch, macOS) to
+  bring it onto this setup and verify it.
 - `ssh/rc` — sshd runs `~/.ssh/rc` at the start of every SSH session. Keeps
   `~/.ssh/ssh_auth_sock` linked to a live forwarded agent socket. Must never
   print (sshd pipes its output into the session, which breaks scp/sftp).
@@ -80,8 +80,8 @@ runs natively on macOS/Linux and inside WSL2 on Windows. Alacritty is a host
 GUI app: symlinked on macOS/Linux, deployed (copied, base + WSL shell) to
 `%APPDATA%` on Windows.
 
-**Shell dependencies:** Oh My Zsh (`$HOME/.oh-my-zsh`), `herdr`/`zellij`
-(multiplexer on the remote host only), `zoxide` (`z` to jump), `eza`
+**Shell dependencies:** Oh My Zsh (`$HOME/.oh-my-zsh`), `herdr` (multiplexer,
+used on the remote host; the client everywhere), `zoxide` (`z` to jump), `eza`
 (listings), `thefuck` (optional).
 
 **Where things run:** one multiplexer, on the machine where the agents run
@@ -91,17 +91,14 @@ auto-start a multiplexer — a local one wrapped around `ssh` nests two and
 steals the inner one's keys. `.zshrc` behaves per host by testing
 `$SSH_CONNECTION`, not hostnames:
 
-- **SSH login (sandbox):** `exec herdr` if installed, else
-  `exec zellij attach -c main options --theme sandbox`. Guarded by
-  `$ZELLIJ`/`$HERDR_ENV`/`$TMUX` (pane shells inherit `SSH_CONNECTION`) and
-  `NO_MUX=1`. Escape hatches when the `exec` target crashes on login:
-  `ssh -t aviant-sandbox bash`, or `ssh -t aviant-sandbox 'NO_MUX=1 zsh'`.
-  `herdr --remote aviant-sandbox` from a laptop attaches the same server
-  through OpenSSH (ssh config aliases and `ForwardAgent` apply; the server is
-  started over a non-interactive ssh command, so this branch never fires
-  for it). herdr's prefix is `Ctrl+b`, which is also zellij's tmux-mode key —
-  only a problem when nested, which the model avoids.
-- **Local:** no auto-start; `zj [name]` = `zellij attach -c <name>` by hand.
+- **SSH login (sandbox):** `exec herdr` when installed. Guarded by
+  `$HERDR_ENV`/`$TMUX` (pane shells inherit `SSH_CONNECTION`) and `NO_MUX=1`.
+  Escape hatches when herdr crashes on login: `ssh -t aviant-sandbox bash`,
+  or `ssh -t aviant-sandbox 'NO_MUX=1 zsh'`. `herdr --remote aviant-sandbox`
+  from a laptop attaches the same server through OpenSSH (ssh config aliases
+  and `ForwardAgent` apply; the server is started over a non-interactive ssh
+  command, so this branch never fires for it). Prefix `Ctrl+b`.
+- **Local:** no auto-start, nothing to attach to.
 
 **Agent forwarding on the sandbox:** git there authenticates with the
 laptop's agent (`ForwardAgent yes`); no private key should be needed on the
@@ -113,13 +110,12 @@ Over SSH `.zshrc` never sources `~/.ssh/agent.env` or starts an agent — doing
 so hid the forwarded agent behind a local one. Locally the agent block is
 unchanged (start/reuse one agent, auto-load `id_ed25519`).
 
-**Keys through the stack:** Alt+<key> reaches a remote multiplexer as
+**Keys through the stack:** Alt+<key> reaches the remote herdr as
 ESC-prefixed bytes over ssh, unchanged by Alacritty or GNOME (the `gnome/`
-tweak frees Alt+1..9 for apps like KiCad; zellij switches tabs with `Ctrl t`
-+ digit, herdr with `prefix+digit`, so neither depends on it).
+tweak frees Alt+1..9 for apps like KiCad; herdr switches tabs with
+`prefix+digit`, so it does not depend on it).
 
-**Custom aliases/functions defined in .zshrc:**
-- `zj [name]` → `zellij attach -c <name>` (default `local`) for local panes
+**Custom aliases defined in .zshrc:**
 - `p` → `cd ~/Project`
 - `ls` → `eza` listing (icons, hyperlinks, dirs first)
 - `lsa` → `ls -a`
@@ -137,8 +133,8 @@ tweak frees Alt+1..9 for apps like KiCad; zellij switches tabs with `Ctrl t`
   the file stays clean on every platform. Host-role differences (local vs
   sandbox) branch on `$SSH_CONNECTION`, never on hostnames.
 - Keep `install.sh` idempotent.
-- Keep the shared zellij `config.kdl` host-neutral: per-host looks go in a
-  `themes/*.kdl` file selected from `.zshrc`.
+- Only `config.toml` under `.config/herdr/` is tracked; never add herdr's
+  logs, sockets or `session.json`.
 - `ssh/rc` must stay silent and only touch the agent-socket link.
 - For Neovim, don't hand-edit `lazy-lock.json`; change plugins via
   `lua/plugins/` then `:Lazy sync` and commit the regenerated lockfile.

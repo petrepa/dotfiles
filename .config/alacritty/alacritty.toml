@@ -44,8 +44,8 @@ unfocused_hollow = true
 
 [keyboard]
 bindings = [
-    # New Alacritty window (on Windows: a fresh WSL -> zsh -> zellij session).
-    # Alacritty handles this itself, so it works even with zellij running inside.
+    # New Alacritty window (on Windows: a fresh WSL -> zsh). Alacritty handles
+    # this itself, so it works even with a multiplexer running inside.
     { key = "N", mods = "Control|Shift", action = "CreateNewWindow" },
     { key = "F11", action = "ToggleFullscreen" },
     # Shift+Return sends Esc+CR instead of a plain newline, for apps/prompts

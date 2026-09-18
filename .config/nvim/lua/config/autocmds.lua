@@ -9,7 +9,7 @@
 
 -- LazyVim's built-in checktime only fires on FocusGained/TermClose/TermLeave,
 -- which requires the terminal to report OS-level window focus. That doesn't
--- happen when switching between zellij panes in the same window, so also
+-- happen when switching between multiplexer panes in the same window, so also
 -- check on CursorHold/CursorHoldI (updatetime = 200ms) to pick up external
 -- edits (e.g. from Claude Code in another pane) almost immediately.
 vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {

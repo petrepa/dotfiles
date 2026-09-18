@@ -1,6 +1,6 @@
-# Fall back to a sane TERM if the parent didn't provide one. A zellij server
-# daemonizes under the init process and keeps the environment it was born with,
-# so a server started before a terminal's config was fixed hands every pane an
+# Fall back to a sane TERM if the parent didn't provide one. A multiplexer
+# server (herdr) daemonizes and keeps the environment it was born with, so a
+# server started before a terminal's config was fixed hands every pane an
 # empty TERM — which makes TUIs (Claude Code, nvim, eza) drop all color.
 # Must run before oh-my-zsh: the theme and zsh's terminfo keybindings need TERM.
 [[ -z "$TERM" || "$TERM" == "dumb" ]] && export TERM="xterm-256color"
@@ -109,7 +109,7 @@ source $ZSH/oh-my-zsh.sh
 
 export NODE_OPTIONS="--no-deprecation"
 
-# Ensure user-local binaries are on PATH (zellij, zoxide, eza, thefuck on Linux/WSL)
+# Ensure user-local binaries are on PATH (herdr, zoxide, eza, thefuck on Linux/WSL)
 export PATH="$HOME/.local/bin:$PATH"
 
 # ssh-agent.
@@ -162,31 +162,22 @@ command -v zoxide &> /dev/null && eval "$(zoxide init zsh)"
 # fzf key bindings/completion — only if the install script generated it
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# Multiplexer.
+# Multiplexer: herdr, on the machine where the agents run.
 #
-# One multiplexer, on the machine where the agents run. Local terminals stay
-# plain (Alacritty windows, no auto-start): the persistent session lives on the
-# remote box, and a local multiplexer around `ssh` would nest two and steal
-# the inner one's keys. `zj` starts a local zellij by hand when panes are
-# wanted locally.
-zj() { zellij attach -c "${1:-local}"; }
-
-# On SSH logins, land straight in the persistent session: herdr if installed
-# (the agent-aware multiplexer, also reachable from a laptop with
-# `herdr --remote <host>`), otherwise zellij with the orange sandbox theme.
-# Skipped inside any multiplexer pane (their shells inherit SSH_CONNECTION).
+# Local terminals stay plain (Alacritty windows, no auto-start): the persistent
+# session lives on the remote box, and a local multiplexer around `ssh` would
+# nest two and steal the inner one's keys.
 #
-# `exec` replaces zsh instead of nesting under it, so quitting the multiplexer
-# closes the connection rather than dropping you at a stray shell. The cost:
-# a crash on login closes the SSH session too. Escape hatches:
+# On SSH logins, land straight in the persistent herdr session (the same one
+# `herdr --remote <host>` attaches to from a laptop). Skipped inside a herdr
+# pane — pane shells inherit SSH_CONNECTION — and inside tmux.
+#
+# `exec` replaces zsh instead of nesting under it, so quitting herdr closes the
+# connection rather than dropping you at a stray shell. The cost: a crash on
+# login closes the SSH session too. Escape hatches:
 #     ssh -t <host> bash               # bypasses .zshrc entirely
 #     ssh -t <host> 'NO_MUX=1 zsh'     # zsh with this config, no multiplexer
-if [[ -n "$SSH_CONNECTION" && -z "$ZELLIJ" && -z "$HERDR_ENV" && -z "$TMUX" && -z "$NO_MUX" ]]; then
-    if command -v herdr &> /dev/null; then
-        exec herdr
-    elif command -v zellij &> /dev/null; then
-        # A fixed session name: a bare `zellij attach -c` picks the session
-        # implicitly and fails hard the moment two sessions are live.
-        exec zellij attach -c main options --theme sandbox
-    fi
+if [[ -n "$SSH_CONNECTION" && -z "$HERDR_ENV" && -z "$TMUX" && -z "$NO_MUX" ]] \
+    && command -v herdr &> /dev/null; then
+    exec herdr
 fi
