@@ -162,17 +162,31 @@ command -v zoxide &> /dev/null && eval "$(zoxide init zsh)"
 # fzf key bindings/completion — only if the install script generated it
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# Auto-start zellij — only on SSH logins (e.g. the AWS sandbox). Locally,
-# Alacritty stays a plain terminal: agents run on the remote box, so the
-# persistent session belongs there, and a local zellij + ssh would nest two.
+# Multiplexer.
 #
-# Always attach to one fixed session name. A bare `zellij attach -c` picks the
-# session implicitly, which fails hard ("Please specify the session to attach
-# to") the moment two sessions are live — zsh then falls through to a plain
-# prompt with no zellij. A name is never ambiguous.
+# One multiplexer, on the machine where the agents run. Local terminals stay
+# plain (Alacritty windows, no auto-start): the persistent session lives on the
+# remote box, and a local multiplexer around `ssh` would nest two and steal
+# the inner one's keys. `zj` starts a local zellij by hand when panes are
+# wanted locally.
+zj() { zellij attach -c "${1:-local}"; }
+
+# On SSH logins, land straight in the persistent session: herdr if installed
+# (the agent-aware multiplexer, also reachable from a laptop with
+# `herdr --remote <host>`), otherwise zellij with the orange sandbox theme.
+# Skipped inside any multiplexer pane (their shells inherit SSH_CONNECTION).
 #
-# `exec` replaces zsh instead of nesting under it, so quitting zellij closes the
-# terminal rather than dropping you at a stray shell.
-if command -v zellij &> /dev/null && [[ -z "$ZELLIJ" && -n "$SSH_CONNECTION" ]]; then
-    exec zellij attach -c main
+# `exec` replaces zsh instead of nesting under it, so quitting the multiplexer
+# closes the connection rather than dropping you at a stray shell. The cost:
+# a crash on login closes the SSH session too. Escape hatches:
+#     ssh -t <host> bash               # bypasses .zshrc entirely
+#     ssh -t <host> 'NO_MUX=1 zsh'     # zsh with this config, no multiplexer
+if [[ -n "$SSH_CONNECTION" && -z "$ZELLIJ" && -z "$HERDR_ENV" && -z "$TMUX" && -z "$NO_MUX" ]]; then
+    if command -v herdr &> /dev/null; then
+        exec herdr
+    elif command -v zellij &> /dev/null; then
+        # A fixed session name: a bare `zellij attach -c` picks the session
+        # implicitly and fails hard the moment two sessions are live.
+        exec zellij attach -c main options --theme sandbox
+    fi
 fi
