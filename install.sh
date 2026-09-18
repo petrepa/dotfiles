@@ -29,6 +29,10 @@ if grep -qiE "(microsoft|wsl)" /proc/version 2>/dev/null; then IS_WSL=1; fi
 LOCAL_BIN="$HOME/.local/bin"
 LOCAL_OPT="$HOME/.local/opt"
 mkdir -p "$LOCAL_BIN" "$LOCAL_OPT"
+# .zshrc adds this to PATH, but a fresh machine (or `ssh host ./install.sh`)
+# hasn't sourced it yet — without this every user binary looks missing and
+# gets re-downloaded on each run.
+export PATH="$LOCAL_BIN:$PATH"
 
 have() { command -v "$1" >/dev/null 2>&1; }
 
