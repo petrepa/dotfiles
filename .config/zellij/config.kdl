@@ -1,3 +1,21 @@
+// Shared zellij config (all machines). Only what differs from zellij's
+// defaults; everything else (keybindings, plugins) is the stock set.
+//
+// Themes live in themes/ (auto-loaded from the config dir). tokyo-night is the
+// default; the SSH auto-start in .zshrc overrides it with
+// `options --theme sandbox` so a session on the remote box is unmistakably
+// orange, and never confused with a local one.
 theme "tokyo-night"
-//  default_layout "compact"
 on_force_close "quit"
+mouse_mode true
+
+keybinds {
+    shared_except "locked" {
+        // Direct keyboard scrolling without entering scroll mode first —
+        // for clients whose trackpad/wheel scroll never reaches zellij.
+        bind "Alt u" { HalfPageScrollUp; }
+        bind "Alt d" { HalfPageScrollDown; }
+        bind "Alt PageUp" { PageScrollUp; }
+        bind "Alt PageDown" { PageScrollDown; }
+    }
+}

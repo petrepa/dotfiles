@@ -1,0 +1,18 @@
+// Warm/orange theme for zellij sessions on the remote sandbox, so a remote
+// session is easy to tell apart from a local one. Selected per host from
+// .zshrc (`zellij attach -c main options --theme sandbox`), never here.
+themes {
+    sandbox {
+        fg "#ebdbb2"
+        bg "#3a2a2a"
+        black "#282828"
+        red "#fb4934"
+        green "#fe8019"
+        yellow "#fabd2f"
+        blue "#83a598"
+        magenta "#d3869b"
+        cyan "#8ec07c"
+        white "#ebdbb2"
+        orange "#fe8019"
+    }
+}
