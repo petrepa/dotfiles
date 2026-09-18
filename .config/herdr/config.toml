@@ -1,0 +1,12 @@
+# herdr — agent-aware terminal multiplexer (https://herdr.dev).
+# Symlinked to ~/.config/herdr/config.toml by install.sh; herdr keeps its
+# logs, sockets and session state next to it, so only this file is tracked.
+#
+# The server runs on the sandbox; laptops attach with `herdr --remote <host>`,
+# which draws the UI with *this* (local) config, so it matters on every host.
+# `herdr --default-config` prints every option.
+onboarding = false
+
+[theme]
+name = "gruvbox"
+auto_switch = false

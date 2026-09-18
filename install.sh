@@ -2,9 +2,10 @@
 #
 # Dotfiles install script — macOS, Ubuntu/Linux, and Windows (via WSL2).
 #
-# - macOS:   installs deps via Homebrew (thefuck, eza, zellij, zoxide)
-# - Linux:   installs zsh via apt, and zellij/zoxide/eza as user binaries
+# - macOS:   installs deps via Homebrew (thefuck, eza, zellij, zoxide, ...)
+# - Linux:   installs zsh via apt, and zellij/zoxide/eza/... as user binaries
 #            in ~/.local/bin (they aren't reliably packaged in apt)
+# - both:    herdr via its own installer (single binary in ~/.local/bin)
 # - Windows: run this inside WSL2 (Ubuntu). In addition to the Linux setup it
 #            deploys the Alacritty config to %APPDATA%\alacritty on the host.
 #
@@ -174,16 +175,30 @@ install_linux_deps() {
     echo "Note: thefuck is optional (Python-based). Install with 'pipx install thefuck' if wanted."
 }
 
+# herdr — agent-aware multiplexer: the persistent session on the sandbox, and
+# the `herdr --remote <host>` client everywhere else. Its own installer drops a
+# single binary into ~/.local/bin (no root), same on macOS and Linux.
+install_herdr() {
+    if have herdr; then
+        echo "herdr already installed"
+    else
+        echo "Installing herdr -> $LOCAL_BIN ..."
+        curl -fsSL https://herdr.dev/install.sh | HERDR_INSTALL_DIR="$LOCAL_BIN" sh
+    fi
+}
+
 case "$OS" in
     macos)
         echo ""
         echo "Detected macOS, checking dependencies..."
         install_macos_deps
+        install_herdr
         ;;
     linux)
         echo ""
         echo "Detected Linux$([ "$IS_WSL" = 1 ] && echo ' (WSL2)'), checking dependencies..."
         install_linux_deps
+        install_herdr
         ;;
     *)
         echo "Unknown OS ($OSTYPE) — skipping dependency installation."
@@ -222,6 +237,10 @@ link "$DOTFILES_DIR/.config/nvim" "$HOME/.config/nvim"
 # Alacritty — native config for macOS/Linux
 mkdir -p "$HOME/.config/alacritty"
 link "$DOTFILES_DIR/.config/alacritty/alacritty.toml" "$HOME/.config/alacritty/alacritty.toml"
+
+# herdr — only config.toml; herdr keeps logs/sockets/session state in the same dir
+mkdir -p "$HOME/.config/herdr"
+link "$DOTFILES_DIR/.config/herdr/config.toml" "$HOME/.config/herdr/config.toml"
 
 # ~/.ssh/rc — keeps a stable link to the forwarded ssh-agent socket on hosts
 # that are SSH'd into (the sandbox); inert on hosts that aren't.
