@@ -145,7 +145,9 @@ alias lta='lt -a'
 # Initialize zoxide (smarter cd) — only if installed
 command -v zoxide &> /dev/null && eval "$(zoxide init zsh)"
 
-# Auto-start zellij.
+# Auto-start zellij — only on SSH logins (e.g. the AWS sandbox). Locally,
+# Alacritty stays a plain terminal: agents run on the remote box, so the
+# persistent session belongs there, and a local zellij + ssh would nest two.
 #
 # Always attach to one fixed session name. A bare `zellij attach -c` picks the
 # session implicitly, which fails hard ("Please specify the session to attach
@@ -154,6 +156,6 @@ command -v zoxide &> /dev/null && eval "$(zoxide init zsh)"
 #
 # `exec` replaces zsh instead of nesting under it, so quitting zellij closes the
 # terminal rather than dropping you at a stray shell.
-if command -v zellij &> /dev/null && [[ -z "$ZELLIJ" ]]; then
+if command -v zellij &> /dev/null && [[ -z "$ZELLIJ" && -n "$SSH_CONNECTION" ]]; then
     exec zellij attach -c main
 fi
