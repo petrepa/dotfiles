@@ -166,7 +166,7 @@ command -v zoxide &> /dev/null && eval "$(zoxide init zsh)"
 #
 # Local terminals stay plain (Alacritty windows, no auto-start): the persistent
 # session lives on the remote box, and a local multiplexer around `ssh` would
-# nest two and steal the inner one's keys.
+# nest two and steal the inner one's keys. Exception: the WSL desktop, below.
 #
 # On SSH logins, land straight in the persistent herdr session (the same one
 # `herdr --remote <host>` attaches to from a laptop). Skipped inside a herdr
@@ -180,4 +180,18 @@ command -v zoxide &> /dev/null && eval "$(zoxide init zsh)"
 if [[ -n "$SSH_CONNECTION" && -z "$HERDR_ENV" && -z "$TMUX" && -z "$NO_MUX" ]] \
     && command -v herdr &> /dev/null; then
     exec herdr
+fi
+
+# WSL desktop: local agents run here, so every Alacritty window joins one
+# zellij session, `main`, even when another window already shows it. A window
+# that dies (sleep, wslhost hang) is replaced by opening a new one, and an
+# EXITED `main` (after a reboot) is resurrected. Two windows on one session
+# render at the smaller window's size. Start a separate session by hand with
+# `zellij` when one is wanted.
+#
+# No `exec`: quitting or detaching zellij drops back to a plain zsh prompt in
+# the same window instead of closing it. `exit` from there closes the window.
+if [[ -r /proc/version && "$(</proc/version)" == *[Mm]icrosoft* && -z "$SSH_CONNECTION" && -z "$ZELLIJ" && -z "$NO_MUX" ]] \
+    && command -v zellij &> /dev/null; then
+    zellij attach -c main
 fi

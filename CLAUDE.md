@@ -86,9 +86,10 @@ used on the remote host; the client everywhere), `zoxide` (`z` to jump), `eza`
 
 **Where things run:** one multiplexer, on the machine where the agents run
 (the AWS sandbox, `ssh aviant-sandbox`). Local stations (Ubuntu/GNOME laptop,
-Windows/WSL desktop, Omarchy laptop) run a plain Alacritty and never
-auto-start a multiplexer — a local one wrapped around `ssh` nests two and
-steals the inner one's keys. `.zshrc` behaves per host by testing
+Omarchy laptop) run a plain Alacritty and never auto-start a multiplexer — a
+local one wrapped around `ssh` nests two and steals the inner one's keys. The
+Windows/WSL desktop is the exception: agents run locally there too, so it
+auto-starts zellij. `.zshrc` behaves per host by testing
 `$SSH_CONNECTION`, not hostnames:
 
 - **SSH login (sandbox):** `exec herdr` when installed. Guarded by
@@ -99,6 +100,11 @@ steals the inner one's keys. `.zshrc` behaves per host by testing
   and `ForwardAgent` apply; the server is started over a non-interactive ssh
   command, so this branch never fires for it). Prefix `Ctrl+b`.
 - **Local:** no auto-start, nothing to attach to.
+- **Local WSL (Windows desktop):** every window runs `zellij attach -c main`
+  (no `exec`), so a closed window is replaced by opening a new one and an
+  EXITED `main` is resurrected after a reboot. Detected with `/proc/version`
+  like `install.sh`. Two windows on `main` render at the smaller one's size.
+  The zellij config there is local (`~/.config/zellij`), not tracked.
 
 **Agent forwarding on the sandbox:** git there authenticates with the
 laptop's agent (`ForwardAgent yes`); no private key should be needed on the
