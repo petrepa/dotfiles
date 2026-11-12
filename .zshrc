@@ -177,7 +177,7 @@ command -v zoxide &> /dev/null && eval "$(zoxide init zsh)"
 # login closes the SSH session too. Escape hatches:
 #     ssh -t <host> bash               # bypasses .zshrc entirely
 #     ssh -t <host> 'NO_MUX=1 zsh'     # zsh with this config, no multiplexer
-if [[ -n "$SSH_CONNECTION" && -z "$HERDR_ENV" && -z "$TMUX" && -z "$NO_MUX" ]] \
+if [[ -n "$SSH_CONNECTION" && -z "$HERDR_ENV" && -z "$HC_TERMINAL_ID" && -z "$TMUX" && -z "$NO_MUX" ]] \
     && command -v herdr &> /dev/null; then
     exec herdr
 fi
@@ -191,7 +191,7 @@ fi
 #
 # No `exec`: quitting or detaching zellij drops back to a plain zsh prompt in
 # the same window instead of closing it. `exit` from there closes the window.
-if [[ -r /proc/version && "$(</proc/version)" == *[Mm]icrosoft* && -z "$SSH_CONNECTION" && -z "$ZELLIJ" && -z "$NO_MUX" ]] \
+if [[ -r /proc/version && "$(</proc/version)" == *[Mm]icrosoft* && -z "$SSH_CONNECTION" && -z "$ZELLIJ" && -z "$HC_TERMINAL_ID" && -z "$NO_MUX" ]] \
     && command -v zellij &> /dev/null; then
     zellij attach -c main
 fi
